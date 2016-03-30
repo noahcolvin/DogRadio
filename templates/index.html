@@ -32,6 +32,8 @@
     <div class="page-header">
         <h1>Dog Radio</h1>
     </div>
+    
+    <div class="alert alert-danger" role="alert" ng-if="errorMessage" ng-bind="errorMessage"></div>
 
     <div id="playerControls" class="row">
         <span class="glyphicon glyphicon-step-backward col-xs-3 text-left" aria-hidden="true" ng-click="sendCommand('previous');"></span>

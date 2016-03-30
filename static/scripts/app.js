@@ -2,73 +2,95 @@
 
 var app = angular.module('radioApp', ['ngResource', 'ui.bootstrap']);
 
-app.controller('radioController', ['$scope', 'Controls', '$interval', function($scope, Controls, $interval) {
-    $scope.sendCommand = function(command) {
-        Controls.run(command)
-            .then(function(data) {
-                updateStatus();
-            });;
-    }
+app.controller('radioController', ['$scope', 'Controls', '$interval',
+    function($scope, Controls, $interval) {
+        $scope.volumeLevel = 0;
 
-    $scope.setRelativeVolume = function(offset) {
-        Controls.setVolume(offset)
-            .then(function(data) {
-                $scope.volumeLevel = data.volume;
-            });
-    }
+        $scope.sendCommand = function(command) {
+            Controls.run(command)
+                .then(function(data) {
+                    updateStatus();
+                })
+                .catch(function(error) {
+                    $scope.errorMessage = 'Error: ' + error.data;
+                });
+        }
 
-    function updateStatus() {
-        Controls.getStatus()
-            .then(function(data) {
-                $scope.volumeLevel = data.volume;
-                $scope.playMode = data.playMode;
-                $scope.title = data.title;
-            });
-    }
-    
-    $interval(updateStatus, 60000); // 1 minute
+        $scope.setRelativeVolume = function(offset) {
+            Controls.setVolume(offset)
+                .then(function(data) {
+                    $scope.volumeLevel = data.volume;
+                })
+                .catch(function(error) {
+                    $scope.errorMessage = 'Error: ' + error.data;
+                });
+        }
 
-    updateStatus();
-}]);
+        function updateStatus() {
+            Controls.getStatus()
+                .then(function(data) {
+                    $scope.volumeLevel = data.volume;
+                    $scope.playMode = data.playMode;
+                    $scope.title = data.title;
+                })
+                .catch(function(error) {
+                    $scope.errorMessage = 'Error: ' + error.data;
+                });
+        }
 
-app.factory('Controls', ['$http', '$q', function($http, $q) {
-    function runCommand(command) {
-        var deferred = $q.defer();
+        $interval(updateStatus, 60000); // 1 minute
 
-        $http.post('http://192.168.1.239:5000/control/' + command)
-            .success(function(data) {
-                deferred.resolve(data);
-            });
+        updateStatus();
+    }]);
 
-        return deferred.promise;
-    }
+app.factory('Controls', ['$http', '$q',
+    function($http, $q) {
+        function runCommand(command) {
+            var deferred = $q.defer();
 
-    function setVolume(value) {
-        var deferred = $q.defer();
+            $http.post('http://192.168.1.239:5000/control/' + command)
+                .then(function(data) {
+                    deferred.resolve(data);
+                },
+                function(err) {
+                    deferred.reject(err);
+                });
 
-        $http.put('http://192.168.1.239:5000/volume/' + value)
-            .success(function(data) {
-                deferred.resolve(data);
-            });
+            return deferred.promise;
+        }
 
-        return deferred.promise;
-    }
+        function setVolume(value) {
+            var deferred = $q.defer();
 
-    function getStatus(command) {
-        var deferred = $q.defer();
+            $http.put('http://192.168.1.239:5000/volume/' + value)
+                .then(function(data) {
+                    deferred.resolve(data);
+                },
+                function(err) {
+                    deferred.reject(err);
+                });
 
-        $http.get('http://192.168.1.239:5000/status')
-            .success(function(data) {
-                deferred.resolve(data);
-            });
+            return deferred.promise;
+        }
 
-        return deferred.promise;
-    }
+        function getStatus(command) {
+            var deferred = $q.defer();
 
-    return {
-        run: runCommand,
-        setVolume: setVolume,
-        getStatus: getStatus
-    };
-}]);
+            $http.get('http://192.168.1.239:5000/status')
+                .then(function(data) {
+                    deferred.resolve(data);
+                },
+                function(err) {
+                    deferred.reject(err);
+                });
+
+            return deferred.promise;
+        }
+
+        return {
+            run: runCommand,
+            setVolume: setVolume,
+            getStatus: getStatus
+        };
+    }]);
 
