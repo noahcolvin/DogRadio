@@ -1,5 +1,6 @@
 import os
 import subprocess
+from flask_restful import Resource
 from helpers import Parser
 
 class C(): pass
