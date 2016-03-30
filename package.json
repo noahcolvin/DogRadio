@@ -1,0 +1,24 @@
+{
+    "name": "dogradio",
+    "version": "0.0.1",
+    "description": "Project to play internet radio for my dogs on Raspberry Pi",
+    "main": "app.py",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "prestart": "npm install",
+        "start": "live-server --port=8080 --open=templates/index.html"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://noahcolvin@github.com/noahcolvin/DogRadio.git"
+    },
+    "author": "Noah Colvin",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/noahcolvin/DogRadio/issues"
+    },
+    "homepage": "https://github.com/noahcolvin/DogRadio#readme",
+    "devDependencies": {
+        "live-server": "^0.9.2"
+    }
+}
