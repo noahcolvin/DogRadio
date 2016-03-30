@@ -19,7 +19,8 @@ app.controller('radioController', ['$scope', 'Controls', '$interval',
         $scope.setRelativeVolume = function(offset) {
             Controls.setVolume(offset)
                 .then(function(data) {
-                    $scope.volumeLevel = data.volume;
+                    var d = data.data;
+                    $scope.volumeLevel = d.volume;
                 })
                 .catch(function(error) {
                     $scope.errorMessage = 'Error: ' + error.data;
@@ -29,9 +30,10 @@ app.controller('radioController', ['$scope', 'Controls', '$interval',
         function updateStatus() {
             Controls.getStatus()
                 .then(function(data) {
-                    $scope.volumeLevel = data.volume;
-                    $scope.playMode = data.playMode;
-                    $scope.title = data.title;
+                    var d = data.data;
+                    $scope.volumeLevel = d.volume;
+                    $scope.playMode = d.playMode;
+                    $scope.title = d.title;
                 })
                 .catch(function(error) {
                     $scope.errorMessage = 'Error: ' + error.data;
