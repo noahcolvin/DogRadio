@@ -1,6 +1,67 @@
-<html>
-<head><title>Test</title><head>
-<body>
-	<h1>Hello from a template</h1>
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en" ng-app="radioApp" class="no-js">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Dog Radio</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.0.0/normalize.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+    crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
+    crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/static/styles/app.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+</head>
+
+<body class="container" ng-controller="radioController">
+    <!--[if lt IE 7]>
+        <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div class="page-header">
+        <h1>Dog Radio</h1>
+    </div>
+
+    <div id="playerControls" class="row">
+        <span class="glyphicon glyphicon-step-backward col-xs-3 text-left" aria-hidden="true" ng-click="sendCommand('previous');"></span>
+        <span class="glyphicon glyphicon-play col-xs-2 text-left" aria-hidden="true" ng-click="sendCommand('play');" ng-class="{activeControl: playMode == 'playing'}"></span>
+        <span class="glyphicon glyphicon-pause col-xs-2 text-center" aria-hidden="true" ng-click="sendCommand('pause');" ng-class="{activeControl: playMode == 'paused'}"></span>
+        <span class="glyphicon glyphicon-stop col-xs-2 text-right" aria-hidden="true" ng-click="sendCommand('stop');" ng-class="{activeControl: playMode == 'stopped'}"></span>
+        <span class="glyphicon glyphicon-step-forward col-xs-3 text-right" aria-hidden="true" ng-click="sendCommand('next');"></span>
+    </div>
+
+    <br/>
+
+    <div class="row">
+        <span class="glyphicon glyphicon-volume-down col-xs-3 text-left" aria-hidden="true" ng-click="setRelativeVolume('-5');"></span>
+        <span class="col-xs-6">
+            <uib-progressbar max="100" value="volumeLevel" ><span style="color:white; white-space:nowrap;">{{volumeLevel}} / 100</span></uib-progressbar>
+        </span>
+        <span class="glyphicon glyphicon-volume-up col-xs-3 text-right" aria-hidden="true" ng-click="setRelativeVolume('+5');"></span>
+    </div>
+
+    <div class="panel panel-default text-center">
+        <div class="panel-body" ng-bind="title">            
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-resource.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.2.5/ui-bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.2.5/ui-bootstrap-tpls.min.js"></script>
+
+    <script src="/static/scripts/app.js"></script>
 </body>
+
 </html>

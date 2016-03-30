@@ -1,0 +1,8 @@
+.glyphicon{
+    cursor: pointer;
+    font-size: x-large;
+}
+
+.activeControl{
+    color: blue;
+}
