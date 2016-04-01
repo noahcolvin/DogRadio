@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from flask_restful import Resource, Api
-from radioApi import Control, Volume, Status
+from radioApi import Control, Volume, Status, Playlist
 
 app = Flask(__name__)
 api = Api(app)
@@ -12,6 +12,7 @@ def index():
 api.add_resource(Control, '/control/<string:action>')
 api.add_resource(Volume, '/volume', '/volume/<string:volume>')
 api.add_resource(Status, '/status')
+api.add_resource(Playlist, '/playlist')
 
 @app.after_request
 def after_request(response):
