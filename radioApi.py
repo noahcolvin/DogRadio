@@ -7,10 +7,10 @@ from helpers import Parser
 class C(): pass
 
 class Control(Resource):
-    def post(self, action):
+    def post(self, action, position = ''):
         os.system('sudo mpd')
         if action == 'play':
-            os.system('mpc play')
+            os.system('mpc play ' + position)
         elif action == 'stop':
             os.system('mpc stop')
             return {'playMode': 'stopped'}

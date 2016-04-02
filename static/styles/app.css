@@ -3,6 +3,14 @@
     font-size: x-large;
 }
 
+table .glyphicon{
+    cursor: pointer;
+    font-size: large;
+}
+
 .activeControl{
-    color: blue;
+    background: linear-gradient(to bottom,#337ab7 0,#265a88 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }

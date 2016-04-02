@@ -9,7 +9,7 @@ api = Api(app)
 def index():    
     return render_template('index.html')
 
-api.add_resource(Control, '/control/<string:action>')
+api.add_resource(Control, '/control/<string:action>', '/control/<string:action>/<string:position>')
 api.add_resource(Volume, '/volume', '/volume/<string:volume>')
 api.add_resource(Status, '/status')
 api.add_resource(Playlist, '/playlist')
