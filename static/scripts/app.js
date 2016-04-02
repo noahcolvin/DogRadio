@@ -38,6 +38,19 @@ app.controller('radioController', ['$scope', 'Controls', '$interval',
                 .catch(function(error) {
                     $scope.errorMessage = 'Error: ' + error.data;
                 });
+
+            loadPlaylist();
+        }
+
+        function loadPlaylist() {
+            Controls.getPlaylist()
+                .then(function(data) {
+                    var d = data.data;
+                    $scope.playlist = d;
+                })
+                .catch(function(error) {
+                    $scope.errorMessage = 'Error: ' + error.data;
+                });
         }
 
         $interval(updateStatus, 60000); // 1 minute
@@ -89,10 +102,25 @@ app.factory('Controls', ['$http', '$q',
             return deferred.promise;
         }
 
+        function getPlaylist() {
+            var deferred = $q.defer();
+
+            $http.get('http://192.168.1.239:5000/playlist')
+                .then(function(data) {
+                    deferred.resolve(data);
+                },
+                function(err) {
+                    deferred.reject(err);
+                });
+
+            return deferred.promise;
+        }
+
         return {
             run: runCommand,
             setVolume: setVolume,
-            getStatus: getStatus
+            getStatus: getStatus,
+            getPlaylist: getPlaylist
         };
     }]);
 

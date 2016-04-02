@@ -48,7 +48,7 @@
     <div class="row">
         <span class="glyphicon glyphicon-volume-down col-xs-3 text-left" aria-hidden="true" ng-click="setRelativeVolume('-5');"></span>
         <span class="col-xs-6">
-            <uib-progressbar max="100" value="volumeLevel" ><span style="color:white; white-space:nowrap;">{{volumeLevel}} / 100</span></uib-progressbar>
+            <uib-progressbar max="100" value="volumeLevel" ><span style="color:white; white-space:nowrap;">{{volumeLevel}}</span></uib-progressbar>
         </span>
         <span class="glyphicon glyphicon-volume-up col-xs-3 text-right" aria-hidden="true" ng-click="setRelativeVolume('+5');"></span>
     </div>
@@ -56,6 +56,12 @@
     <div class="panel panel-default text-center">
         <div class="panel-body" ng-bind="title">            
         </div>
+    </div>
+    
+    <div class="row">
+        <ul>
+            <li ng-repeat="url in playlist" ng-bind="url"></li>
+        </ul>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
