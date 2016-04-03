@@ -12,7 +12,6 @@ def runCommand(command):
 class Control(Resource):
     def post(self, action, position = ''):
         self.checkStartup()
-        #runCommand('sudo mpd')
         if action == 'play':
             runCommand('mpc play ' + position)
         elif action == 'stop':
