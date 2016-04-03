@@ -2,6 +2,7 @@
     "name": "dogradio",
     "version": "0.0.1",
     "description": "Project to play internet radio for my dogs on Raspberry Pi",
+    "private": true,
     "main": "app.py",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",

@@ -1,4 +1,3 @@
-import os
 import subprocess
 from flask import request
 from flask_restful import Resource, abort
@@ -6,48 +5,57 @@ from helpers import Parser
 
 class C(): pass
 
+def runCommand(command):
+    proc = subprocess.Popen([command], stdout=subprocess.PIPE, shell=True)
+    return proc.communicate()
+
 class Control(Resource):
     def post(self, action, position = ''):
-        os.system('sudo mpd')
+        self.checkStartup()
+        #runCommand('sudo mpd')
         if action == 'play':
-            os.system('mpc play ' + position)
+            runCommand('mpc play ' + position)
         elif action == 'stop':
-            os.system('mpc stop')
+            runCommand('mpc stop')
             return {'playMode': 'stopped'}
         elif action =='pause':
-            os.system('mpc pause')
+            runCommand('mpc pause')
         elif action =='next':
-            os.system('mpc next')
+            runCommand('mpc next')
         elif action =='previous':
-            os.system('mpc prev')
+            runCommand('mpc prev')
         else:
             return {'playMode': 'invalid'}
-            
-        proc = subprocess.Popen(['mpc status'], stdout=subprocess.PIPE, shell=True)
-        (out, err) = proc.communicate()
+
+        (out, err) = runCommand('mpc status')
         if err:
             return {'error', err}, 500
         return {'status': Parser.parsePlayMode(out)}
+        
+    def checkStartup(self):
+        s = Status()
+        stat = s.get()
+        if stat['playMode'] == 'stopped':
+            runCommand('mpc clear')
+            runCommand('mpc load dogplaylist')
+        return
 
 class Volume(Resource):    
-    def get(self):
-        proc = subprocess.Popen(["mpc volume"], stdout=subprocess.PIPE, shell=True)
-        (out, err) = proc.communicate()
+    def get(self):        
+        (out, err) = runCommand('mpc volume')
         if err:
             return {'error', err}, 500
-        return {"volume": Parser.parseVolume(out)}
+        return {'volume': Parser.parseVolume(out)}
 
     def put(self, volume):
-        proc = subprocess.Popen(["mpc volume " + volume], stdout=subprocess.PIPE, shell=True)
-        (out, err) = proc.communicate()
+        (out, err) = runCommand('mpc volume ' + volume)
         if err:
             return {'error', err}, 500
-        return {"volume": Parser.parseVolume(out)}
+        return {'volume': Parser.parseVolume(out)}
 
 class Status(Resource):
     def get(self):
-        proc = subprocess.Popen(["mpc status"], stdout=subprocess.PIPE, shell=True)
-        (out, err) = proc.communicate()
+        (out, err) = runCommand('mpc status')
         if err:
             return {'error', err}, 500
         c = C()
@@ -58,32 +66,37 @@ class Status(Resource):
 
 class Playlist(Resource):
     def get(self):
-        proc = subprocess.Popen(["mpc playlist"], stdout=subprocess.PIPE, shell=True)
-        (out, err) = proc.communicate()
+        (out, err) = runCommand('mpc playlist')
         if err:
             return {'error', err}, 500
         items = out.split('\n')
         return [x for x in items if x]
 
-    def post(self):
-        proc = subprocess.Popen(["mpc add " + request.get_json()['url']], stdout=subprocess.PIPE, shell=True)
-        (out, err) = proc.communicate()
+    def post(self):        
+        (out, err) = runCommand('mpc add ' + request.get_json()['url'])
         if err:
             return {'error', err}, 500
+        self.savePlaylist()
         return '', 204
 
     def delete(self):
         url = request.get_json()['url']
         playlist = self.get()
         try:
-            index = playlist.index(url) + 1
-            proc = subprocess.Popen(["mpc del " + str(index)], stdout=subprocess.PIPE, shell=True)
-            (out, err) = proc.communicate()
+            index = playlist.index(url) + 1            
+            (out, err) = runCommand('mpc del ' + str(index))
             if err:
                 return {'error', err}, 500
+            self.savePlaylist()
             return '', 204
         except ValueError:
             abort(404, message='URL not found in playlist')
+        
+    def savePlaylist(self):
+        try:
+            runCommand('mpc save dogplaylist')
+        finally:
+            return
 
 
 
