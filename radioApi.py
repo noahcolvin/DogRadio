@@ -3,19 +3,38 @@ from flask import request
 from flask_restful import Resource, abort
 from helpers import Parser
 
+import logging
+from apscheduler.schedulers.background import BackgroundScheduler
+
 class C(): pass
+
+logging.basicConfig()
+scheduler = None
 
 def runCommand(command):
     proc = subprocess.Popen([command], stdout=subprocess.PIPE, shell=True)
     return proc.communicate()
 
 class Control(Resource):
+
     def post(self, action, position = ''):
+        global scheduler
         self.checkStartup()
+        
         if action == 'play':
             runCommand('mpc play ' + position)
+            
+            if scheduler is None:
+                scheduler = BackgroundScheduler()
+                scheduler.add_job(self.checkStatus, 'interval', seconds=30, id='checkStatus', replace_existing=True)
+                scheduler.start()
         elif action == 'stop':
             runCommand('mpc stop')
+            
+            if scheduler is not None:
+                scheduler.remove_job('checkStatus')
+                scheduler.shutdown()
+                scheduler = None
             return {'playMode': 'stopped'}
         elif action =='pause':
             runCommand('mpc pause')
@@ -29,7 +48,7 @@ class Control(Resource):
         (out, err) = runCommand('mpc status')
         if err:
             return {'error', err}, 500
-        return {'status': Parser.parsePlayMode(out)}
+        return {'playMode': Parser.parsePlayMode(out)}
         
     def checkStartup(self):
         s = Status()
@@ -37,6 +56,13 @@ class Control(Resource):
         if stat['playMode'] == 'stopped':
             runCommand('mpc clear')
             runCommand('mpc load dogplaylist')
+        return
+    
+    def checkStatus(self):
+        s = Status()
+        stat = s.get()
+        if stat['playMode'] == 'stopped':
+            self.post('play')
         return
 
 class Volume(Resource):    
@@ -93,6 +119,7 @@ class Playlist(Resource):
         
     def savePlaylist(self):
         try:
+            runCommand('mpc rm dogplaylist')
             runCommand('mpc save dogplaylist')
         finally:
             return
