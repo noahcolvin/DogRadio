@@ -5,21 +5,20 @@ This is a work in progress. This is my first experience with the Raspberry Pi an
 
 When leaving my dogs alone for any length of time I typically physically turn on an old clock radio for noise. This project is to replace that old radio.
 ## Setup
-- Install mpd and mpc
+- Install mpd and for media. PIP to load Python packages
 ```sh
 sudo apt-get install mpd mpc
-```
-- Install pip
-```sh
 sudo apt-get install python-pip
 ```
-- Install Flask
+- Install Flask and flask_restful for HTML and RESTful API.
 ```sh
 sudo pip install flask
-```
-- install flask_restful
-```sh
 sudo pip install flask-restful
+```
+- Install gevent server and APScheduler
+```sh
+sudo pip install gevent
+sudo pip install apscheduler
 ```
 ## Run
 - Start server
