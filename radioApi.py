@@ -2,13 +2,14 @@ import subprocess
 from flask import request
 from flask_restful import Resource, abort
 from helpers import Parser
+from settings import Settings
 
 import logging
+logging.basicConfig()
 from apscheduler.schedulers.background import BackgroundScheduler
 
 class C(): pass
 
-logging.basicConfig()
 scheduler = None
 
 def runCommand(command):
@@ -17,12 +18,21 @@ def runCommand(command):
 
 class Control(Resource):
 
+    def bob(self):
+        settings = Settings()
+        state = settings.get('radio', 'state')
+        #logging.info('initial state = ' + state)
+        self.post(state)
+
     def post(self, action, position = ''):
         global scheduler
         self.checkStartup()
+
+        #logging.debug('posting ' + action + ' position = ' + position)
         
         if action == 'play':
             runCommand('mpc play ' + position)
+            Settings.set('radio', 'state', 'play')
             
             if scheduler is None:
                 scheduler = BackgroundScheduler()
@@ -30,6 +40,7 @@ class Control(Resource):
                 scheduler.start()
         elif action == 'stop':
             runCommand('mpc stop')
+            Settings.set('radio', 'state', 'stop')
             
             if scheduler is not None:
                 scheduler.remove_job('checkStatus')

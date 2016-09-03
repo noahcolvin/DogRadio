@@ -2,8 +2,8 @@
 
 var app = angular.module('radioControllers', []);
 
-app.controller('radioController', ['$scope', 'Controls', 'Playlist', '$interval',
-    function($scope, Controls, Playlist, $interval) {
+app.controller('radioController', ['$scope', 'Controls', 'Playlist', '$interval', 'uibButtonConfig', 'Power',
+    function($scope, Controls, Playlist, $interval, uibButtonConfig, Power) {
         $scope.volumeLevel = 0;
 
         $scope.sendCommand = function(command) {
@@ -74,6 +74,7 @@ app.controller('radioController', ['$scope', 'Controls', 'Playlist', '$interval'
                 });
 
             loadPlaylist();
+            loadPowerStates();
         }
 
         function loadPlaylist() {
@@ -86,6 +87,72 @@ app.controller('radioController', ['$scope', 'Controls', 'Playlist', '$interval'
                     $scope.errorMessage = 'Error: ' + error.data;
                 });
         }
+
+        function loadPowerStates(){
+            Power.getState(0)
+                .then(function(data) {
+                    var d = data.data;
+                    switch(d){
+                        case true:
+                            $scope.speakerToggle = 'On';
+                            break;
+                        case false:
+                            $scope.speakerToggle = 'Off';
+                            break;
+                    }
+                })
+                .catch(function(error) {
+                    $scope.errorMessage = 'Error: ' + error.data;
+                });
+
+            Power.getState(1)
+                .then(function(data) {
+                    var d = data.data;
+                    switch(d){
+                        case true:
+                            $scope.lightToggle = 'On';
+                            break;
+                        case false:
+                            $scope.lightToggle = 'Off';
+                            break;
+                    }
+                })
+                .catch(function(error) {
+                    $scope.errorMessage = 'Error: ' + error.data;
+                });
+        }
+
+        $scope.lightToggle = 'Auto';
+
+        $scope.$watchCollection('lightToggle', function() {
+            switch($scope.lightToggle){
+                case 'On':
+                    Power.setState(1, 'on');
+                    break;
+                case 'Off':
+                    Power.setState(1, 'off');                
+                    break;
+                case 'Auto':
+                    break;
+            }
+        });
+
+        $scope.speakerToggle = 'Auto';
+
+        $scope.$watchCollection('speakerToggle', function() {
+            switch($scope.speakerToggle){
+                case 'On':
+                    Power.setState(0, 'on');
+                    break;
+                case 'Off':
+                    Power.setState(0, 'off');                
+                    break;
+                case 'Auto':
+                    break;
+            }
+        });
+
+        uibButtonConfig.activeClass = 'btn-primary';
 
         $interval(updateStatus, 60000); // 1 minute
 

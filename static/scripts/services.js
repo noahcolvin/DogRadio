@@ -135,3 +135,39 @@ app.factory('Controls', ['$http', '$q',
             getPlaylist: getPlaylist
         };
     }]);
+
+app.factory('Power', ['$http', '$q',
+    function($http, $q) {
+        function setState(index, state) {
+            var deferred = $q.defer();
+
+            $http.post('power/' + index + '/' + state)
+                .then(function(data) {
+                    deferred.resolve(data);
+                },
+                function(err) {
+                    deferred.reject(err);
+                });
+
+            return deferred.promise;
+        }
+
+        function getState(index) {
+            var deferred = $q.defer();
+
+            $http.get('power/' + index)
+                .then(function(data) {
+                    deferred.resolve(data);
+                },
+                function(err) {
+                    deferred.reject(err);
+                });
+
+            return deferred.promise;
+        }
+
+        return {
+            setState,
+            getState
+        };
+    }]);
